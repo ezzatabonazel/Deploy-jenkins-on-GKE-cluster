@@ -1,4 +1,4 @@
-project = "iti-ezzat"
+project = "mahmoudrizk"
 region = "us-central1"
 vpc_name="gcp-project-vpc"
 managment_subnet_cidr="10.0.0.0/24"
