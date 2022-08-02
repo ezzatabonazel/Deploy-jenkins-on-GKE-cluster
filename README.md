@@ -17,13 +17,13 @@ create kubrenetes yaml files and deploy jenkins on GKE cluster
 
 # Steps to implement 
 
-## Build docker image for jenkins:
+## Build docker image for jenkins with docker and kubectl customization:
 
 ```bash
 $ docker build -t jenkins-docker .
 ```
 ---
-## Push docker images to DockerHub:
+## Push docker image to DockerHub:
 
 ```bash
 #  tags the image
@@ -33,6 +33,9 @@ $ docker tag jenkins-docker ezzatabonazel7/jenkins-docker:2.0
 # push the image
 $ docker push ezzatabonazel7/jenkins-docker:2.0
 ```
+
+<img src="screenshots/jenkins-docker.png"/>
+
 
 ---
 
@@ -81,7 +84,6 @@ $ gcloud compute ssh --zone <"us-central1-a"> "managment-vm"  --tunnel-through-i
  # connect cluster
 $ gcloud container clusters get-credentials my-gke-cluster --region <region> --project <project-id>
 ```
-<img src="screenshots/Screenshot from 2022-07-27 19-55-58.png"/>
 
 ## Copy jenkins k8s files to the management instance and deploy jenkins:
 
