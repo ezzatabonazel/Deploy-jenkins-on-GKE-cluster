@@ -11,5 +11,5 @@ resource "google_compute_subnetwork" "restricted_subnet" {
   ip_cidr_range = var.restricted_subnet_cidr
   region        = var.restricted_subnet_region
   network       = google_compute_network.vpc.id
-    private_ip_google_access= true
+  private_ip_google_access= true
 }
