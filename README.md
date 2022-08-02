@@ -1,9 +1,8 @@
-# Deploy-app-at-GKE-with-terraform-GCP
+# Deploy-Jenkins-at-GKE Cluster
 ## Description 
 
-create GCP infrastructure using Terraform , create Docker image for python app 
-
-create kubrenetes yaml files and deploy app on GKE cluster
+create GCP infrastructure using Terraform , create Docker image for jenkins with Docker 
+create kubrenetes yaml files and deploy jenkins on GKE cluster
 
 ## Architecture
 
@@ -11,38 +10,28 @@ create kubrenetes yaml files and deploy app on GKE cluster
 
 # Tools used:
 
-- **Docker:** to build an image from python application.
-- **Kubernetes**: container orchestration system for automating python application containers.
-- **GCP**: to define GKE cluster to deploy python application on it.
+- **Docker:** to build an image for jenkins.
+- **Kubernetes**: container orchestration system.
+- **GCP**: to define GKE cluster to deploy jenkins on it.
 - **Terraform**: provision GCP resources.
 
 # Steps to implement 
 
-## Build docker image and pull redis image:
+## Build docker image for jenkins:
 
 ```bash
-$ docker build -t python-app .
-$ docker pull redis
+$ docker build -t jenkins-docker .
 ```
-
 ---
-
-## Push docker images to GCR:
-
-```bash
-# auth docker with GCR
-$ gcloud auth configure-docker
-```
+## Push docker images to DockerHub:
 
 ```bash
-#  tags the images
-$ docker tag python-app eu.gcr.io/<PROJECT-ID>/python-app:latest
-$ docker tag redis eu.gcr.io/<PROJECT-ID>/redis:latest
+#  tags the image
+$ docker tag jenkins-docker ezzatabonazel7/jenkins-docker:2.0
 ```
 ```bash
-# push the images to GCR
-$ docker push eu.gcr.io/<PROJECT-ID>/python-app:latest
-$ docker push eu.gcr.io/<PROJECT-ID>/redis:latest
+# push the image
+$ docker push ezzatabonazel7/jenkins-docker:2.0
 ```
 
 ---
@@ -72,8 +61,6 @@ pods_ipv4_cidr_block = "172.17.0.0/16"
 ```bash
 $ cd ./terraform-infra
 
-# create gcs bucket and path the name in backend.tf file if you want to keep your state file there or delete the backend.tf if you will keep sate file local
-
 # initialize the backend, provider and modules
 $ terraform init
 
@@ -86,7 +73,7 @@ $ terraform apply
 <img src="screenshots/Screenshot from 2022-07-27 19-38-35.png"/>
 
 
-## Connect to management vm and install gcloud, kubectl and connect on GKE cluster :
+## Connect to bastion vm and install gcloud, kubectl and connect on GKE cluster :
 
 ```bash
 # ssh vm
@@ -96,24 +83,41 @@ $ gcloud container clusters get-credentials my-gke-cluster --region <region> --p
 ```
 <img src="screenshots/Screenshot from 2022-07-27 19-55-58.png"/>
 
-## Copy demo-app k8s to the management instance and deploy the application:
+## Copy jenkins k8s files to the management instance and deploy jenkins:
 
 ```bash
 $ gcloud compute scp <LOCAL_FILE_PATH> <VM_NAME>
 ```
 ```bash
 # create k8s resources
-$ kubectl create -f deployment.yaml 
-$ kubectl create -f  service.yaml
-$ kubectl create -f  redis.yaml
-$ kubectl create -f  redis-svc.yaml
-$ kubectl create -f  ingress.yaml
+$ kubectl create -f  jen-namespce.yaml
+$ kubectl create -f  SA.yaml
+$ kubectl create -f  volume.yaml
+$ kubectl create -f  jenkins-deployment.yaml
+$ kubectl create -f  loadbalancer.yaml
 ```
-<img src="screenshots/Screenshot from 2022-07-27 20-09-58.png"/>
+
+## get loadbalancer ip and go to your browser :
+```bash
+$ kubectl get svc -n jenkins
+
+```
+
+<img src="screenshots/jenkins.png"/>
 
 
+## get admin password 
+```bash
+$ kubectl logs <pod name> -n jenkins
 
-## copy ingress ip and go to your browser :
+```
 
-<img src="screenshots/Screenshot from 2022-07-27 20-10-32.png"/>
 
+## complete setup wizard install recommended plugins 
+
+<img src="screenshots/plugins.png"/>
+
+## Next 
+ We will build a Jenkins pipeline to deploy an application on GKE Cluster:
+ * You will find it in :
+### [CI/CD Deployment with Jenkins On GKE cluster](https://github.com/ezzatabonazel/CI-CD-for-node-app-at-GKE-cluster.git)
