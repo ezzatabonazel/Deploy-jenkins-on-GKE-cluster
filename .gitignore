@@ -1,2 +1,4 @@
 *.terraform
-*.tfstae
+terraform/*.tfstae
+jenkins/test.yaml
+terraform/*.tfvars
