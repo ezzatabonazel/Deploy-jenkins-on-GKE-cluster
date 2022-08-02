@@ -6,12 +6,17 @@ resource "google_compute_instance" "vm" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-9"
+      image = "debian-cloud/debian-11"
     }
   }
 
   network_interface {
     subnetwork = module.network.managment_subnet_id
+
+    access_config {
+      // Ephemeral public IP
+    }
+  
   }
 
 service_account {
@@ -42,25 +47,4 @@ resource "google_project_iam_binding" "gcr-viewer" {
   members = [
     "serviceAccount:${google_service_account.managmet-sa.email}",
   ]
-}
-
-
-resource "google_compute_instance" "test" {
-  name         = "managment-vm"
-  machine_type = var.vm_type
-  zone         = "${var.managment_subnet_region}-b"
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-9"
-    }
-  }
-
-  network_interface {
-    subnetwork = module.network.restricted_subnet_id
-  }
-
-service_account {
-    email  = google_service_account.managmet-sa.email
-    scopes = ["cloud-platform"]
-  }
 }
